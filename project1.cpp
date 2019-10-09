@@ -479,16 +479,16 @@ void eliminate(int **output,int *high,int row,int col){
         }
         else continue;
         if(check==row){                      //eliminate
-            check=0;
-            for(int k=1;k<col+1;k++)
-                output[i][k]=0; 
+            check=0; 
             for(int k=i;k>0;k--)                  //move upper rows down 
-                for(int l=1;l<row+1;l++)
+                for(int l=1;l<col+1;l++)
                     output[k][l]=output[k-1][l];
             for(int k=1;k<col+1;k++)             //make sure row(0) would be all 0
                 output[0][k]=0;        
         }
     }
+    for(int i=0;i<row+4;i++)            //intitialize the record for changing of every row
+        output[i][0]=0;
     int check1=0;                         
     for(int i=1;i<col+1;i++){           //find the highest row in every col
         for(int j=0;j<row+4;j++){   
