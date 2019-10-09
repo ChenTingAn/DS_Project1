@@ -9,7 +9,6 @@ public:
     string type;       
     int index;   //left-bottom index
 };
-
 void T1(int **output,int *high,int ind);
 void T2(int **output,int *high,int ind);
 void T3(int **output,int *high,int ind);
@@ -29,15 +28,11 @@ void Z2(int **output,int *high,int ind);
 void I1(int **output,int *high,int ind);
 void I2(int **output,int *high,int ind);
 void O(int **output,int *high,int ind);
-
+void eliminate(int ** output,int *high,int row,int col);
 int main(){
     tetris tetris;
     int row,col,ind;
-    //create output
-    int **output;
-    output=new int*[row+4];
-    for(int i=0;i<row+4;i++)
-        output[i]=new int[col];
+    int **output; 
     //read
     ifstream inF("tetris.data", ios::in);
     if (!inF) {
@@ -51,9 +46,17 @@ int main(){
         return 1;
     }
     inF>>row>>col;
+    output=new int*[row+4];          //reserve space for exceeded tetris
+    for(int i=0;i<row+4;i++)
+        output[i]=new int[col+1];    //col(0) records rows change or not
+    for(int i=0;i<row+4;i++)         //initialize output
+        for(int j=0;j<col+1;j++)
+            output[i][j]=0;
+    int *high=new int[col+1];        // record the highest number in every col
+    for(int i=0;i<col+1;i++)         //initialize high,nothing => high=row+4
+        high[i]=row+4;
     while(1){
         int h;
-        int high[16]={0}; // record the highest number in every col
         inF>>tetris.type;
         if(tetris.type=="End"){
             break;
@@ -82,7 +85,6 @@ int main(){
     }
     return 0;
 }
-
 void T1(int **output,int *high,int ind){
     int h;
     //middle is the highest or as high as left or right
@@ -93,6 +95,8 @@ void T1(int **output,int *high,int ind){
             high[i]=h-2;
         }
         output[h-1][ind+1]=1;
+        for(int i=h-1;i>h-3;i--)      //record which rows change
+            output[i][0]=1;
     }
     //right or left is the highest
     else{
@@ -102,16 +106,19 @@ void T1(int **output,int *high,int ind){
             high[i]=h-1;
         }
         output[h][ind+1]=1;
+        for(int i=h;i>h-2;i--)        //record which rows change
+            output[i][0]=1;
     }
 }
 void T2(int **output,int *high,int ind){
     int h;
-    //right is higher
+    //right is higher or as high as left
     if(high[ind]>=high[ind+1]){
         h=high[ind+1];
         output[h-2][ind]=1;
         for(int i=h-1;i>h-4;i--){
             output[i][ind+1]=1;
+            output[i][0]=1;        
         }
         high[ind]=h-2;
         high[ind+1]=h-3;
@@ -122,6 +129,7 @@ void T2(int **output,int *high,int ind){
         output[h-1][ind]=1;
         for(int i=h;i>h-3;i--){
             output[i][ind+1]=1;
+            output[i][0]=1;       
         }
         high[ind]=h-1;
         high[ind+1]=h-2;
@@ -137,6 +145,8 @@ void T3(int **output,int *high,int ind){
     }
     output[h-2][ind+1]=1;
     high[ind+1]=h-2;
+    for(int i=h-1;i>h-3;i--)     
+        output[i][0]=1;
 }
 void T4(int **output,int *high,int ind){
     int h;
@@ -146,6 +156,7 @@ void T4(int **output,int *high,int ind){
         output[h-2][ind+1]=1;
         for(int i=h-1;i>h-4;i--){
             output[i][ind]=1;
+            output[i][0]=1;          
         }
         high[ind]=h-3;
         high[ind+1]=h-2;
@@ -156,6 +167,7 @@ void T4(int **output,int *high,int ind){
         output[h-1][ind+1]=1;
         for(int i=h;i>h-3;i--){
             output[i][ind]=1;
+            output[i][0]=1;          
         }
         high[ind]=h-2;
         high[ind+1]=h-1;
@@ -167,6 +179,7 @@ void L1(int **output,int *high,int ind){
     h=min(high[ind],high[ind+1]);
     for(int i=h-1;i>h-4;i--){
         output[i][ind]=1;
+        output[i][0]=1;            
     }
     output[h-1][ind+1]=1;
     high[ind]=h-3;
@@ -181,7 +194,9 @@ void L2(int **output,int *high,int ind){
         for(int i=ind;i<ind+3;i++){
             output[h-2][i]=1;
             high[i]=h-2;
-        }    
+        }
+        for(int i=h-1;i>h-3;i--)     
+            output[i][0]=1;    
     }
     //middle or right is the highest
     else{
@@ -191,6 +206,8 @@ void L2(int **output,int *high,int ind){
             output[h-1][i]=1;
             high[i]=h-1;
         }
+        for(int i=h;i>h-2;i--)     
+            output[i][0]=1;    
     }
 }
 void L3(int **output,int *high,int ind){
@@ -201,6 +218,7 @@ void L3(int **output,int *high,int ind){
         output[h-1][ind]=1;
         for(int i=h-1;i<h+2;i++){
             output[i][ind+1]=1;
+            output[i][0]=1;
         }
         high[ind]=h-1;
         high[ind+1]=h-1;
@@ -211,6 +229,7 @@ void L3(int **output,int *high,int ind){
         output[h-3][ind]=1;
         for(int i=h-1;i>h-4;i--){
             output[i][ind+1]=1;
+            output[i][0]=1;
         }
         high[ind]=h-3;
         high[ind+1]=h-3;
@@ -225,7 +244,9 @@ void L4(int **output,int *high,int ind){
         output[h-1][i]=1;
         high[i]=h-1;    
     }
-    high[ind+2]=h-2;    
+    high[ind+2]=h-2;
+    for(int i=h-1;i>h-3;i--)     
+        output[i][0]=1;    
 }
 void J1(int **output,int *high,int ind){
     int h;
@@ -233,6 +254,7 @@ void J1(int **output,int *high,int ind){
     h=min(high[ind],high[ind+1]);
     for(int i=h-1;i>h-4;i--){
         output[i][ind+1]=1;
+        output[i][0]=1;
     }
     output[h-1][ind]=1;
     high[ind+1]=h-3;
@@ -247,7 +269,9 @@ void J2(int **output,int *high,int ind){
         output[h-1][i]=1;
         high[i]=h-1;    
     }
-    high[ind]=h-2;    
+    high[ind]=h-2;
+    for(int i=h-1;i>h-3;i--)     
+        output[i][0]=1;        
 }
 void J3(int **output,int *high,int ind){
     int h;
@@ -257,6 +281,7 @@ void J3(int **output,int *high,int ind){
         output[h-1][ind+1]=1;
         for(int i=h-1;i<h+2;i++){
             output[i][ind]=1;
+            output[i][0]=1;
         }
         high[ind]=h-1;
         high[ind+1]=h-1;
@@ -267,6 +292,7 @@ void J3(int **output,int *high,int ind){
         output[h-3][ind+1]=1;
         for(int i=h-1;i>h-4;i--){
             output[i][ind]=1;
+            output[i][0]=1;
         }
         high[ind]=h-3;
         high[ind+1]=h-3;
@@ -281,7 +307,9 @@ void J4(int **output,int *high,int ind){
         for(int i=ind;i<ind+3;i++){
             output[h-2][i]=1;
             high[i]=h-2;
-        }    
+        }
+        for(int i=h-1;i>h-3;i--)     
+            output[i][0]=1;    
     }
     //middle or left is the highest
     else{
@@ -291,6 +319,8 @@ void J4(int **output,int *high,int ind){
             output[h-1][i]=1;
             high[i]=h-1;
         }
+        for(int i=h;i>h-2;i--)     
+            output[i][0]=1;
     }
 }
 void S1(int **output,int *high,int ind){
@@ -298,24 +328,28 @@ void S1(int **output,int *high,int ind){
     //right is the highest
     if(high[ind+2]<high[ind]&&high[ind+2]<high[ind+1]){
         h=high[ind+2];
-        output[h][ind]=1;
-        output[h][ind+1]=1;
-        for(int i=ind+1;i<ind+3;i++){
-            output[h-1][i]=1;
-            high[i]=h-1;
+        for(int i=h;i>h-2;i--){
+            output[i][ind+1]=1;
+            output[i][0]=1;
         }
+        output[h][ind]=1;
+        output[h-1][ind+2]=1;
         high[ind]=h;
+        high[ind+1]=h-1;
+        high[ind+2]=h-1; 
     }
     //left or middle is the highest or as high as right
     else{
         h=min(high[ind],high[ind+1]);
-        output[h-1][ind]=1;
-        output[h-1][ind+1]=1;
-        for(int i=ind+1;i<ind+3;i++){
-            output[h-2][i]=1;
-            high[i]=h-2;
+        for(int i=h-1;i>h-3;i--){
+            output[i][ind+1]=1;
+            output[i][0]=1;
         }
+        output[h-1][ind]=1;
+        output[h-2][ind+2]=1;
         high[ind]=h-1;
+        high[ind+1]=h-2;
+        high[ind+2]=h-2;
     }
 }
 void S2(int **output,int *high,int ind){
@@ -329,6 +363,8 @@ void S2(int **output,int *high,int ind){
         output[h-1][ind+1]=1;
         high[ind]=h-2;
         high[ind+1]=h-1;
+        for(int i=h;i>h-3;i--)
+            output[i][0]=1;
     }
     //right is higher or as high as left
     else{
@@ -339,6 +375,8 @@ void S2(int **output,int *high,int ind){
         output[h-2][ind+1]=1;
         high[ind]=h-3;
         high[ind+1]=h-2;
+        for(int i=h-1;i>h-4;i--)
+            output[i][0]=1;
     }
 }
 void Z1(int **output,int *high,int ind){
@@ -346,23 +384,27 @@ void Z1(int **output,int *high,int ind){
     //left is the highest
     if(high[ind]<high[ind+1]&&high[ind]<high[ind+2]){
         h=high[ind];
-        output[h][ind+1]=1;
-        output[h][ind+2]=1;
-        for(int i=ind;i<ind+2;i++){
-            output[h-1][i]=1;
-            high[i]=h-1;
+        for(int i=h;i>h-2;i--){
+            output[i][ind+1]=1;
+            output[i][0]=1;
         }
+        output[h-1][ind]=1;
+        output[h][ind+2]=1;
+        high[ind]=h-1;
+        high[ind+1]=h-1;
         high[ind+2]=h;
     }
     //right or middle is the highest or as high as left
     else{
         h=min(high[ind+1],high[ind+2]);
-        output[h-1][ind+1]=1;
-        output[h-1][ind+2]=1;
-        for(int i=ind;i<ind+2;i++){
-            output[h-2][i]=1;
-            high[i]=h-2;
+        for(int i=h-1;i>h-3;i--){
+            output[i][ind+1]=1;
+            output[i][0]=1;
         }
+        output[h-2][ind]=1;
+        output[h-1][ind+2]=1;
+        high[ind]=h-2;
+        high[ind+1]=h-2;
         high[ind+2]=h-1;
     }
 }
@@ -377,6 +419,8 @@ void Z2(int **output,int *high,int ind){
         output[h-1][ind]=1;
         high[ind]=h-1;
         high[ind+1]=h-2;
+        for(int i=h;i>h-3;i--)
+            output[i][0]=1;
     }
     //left is higher or as high as right
     else{
@@ -387,12 +431,15 @@ void Z2(int **output,int *high,int ind){
         output[h-3][ind+1]=1;
         high[ind]=h-2;
         high[ind+1]=h-3;
+        for(int i=h-1;i>h-4;i--)
+            output[i][0]=1;
     }
 }
 void I1(int **output,int *high,int ind){
     int h=high[ind];
     for(int i=h-1;i>h-5;i--){
         output[i][ind]=1;
+        output[i][0]=1;
     }
     high[ind]=h-4;
 }
@@ -404,6 +451,7 @@ void I2(int **output,int *high,int ind){
         output[h-1][i]=1;
         high[i]=h-1;
     }
+    output[h-1][0]=1;
 }
 void O(int **output,int *high,int ind){
     int h;
@@ -413,5 +461,47 @@ void O(int **output,int *high,int ind){
         output[h-1][i]=1;
         output[h-2][i]=1;
         high[i]=h-2;
+    }
+    for(int i=h-1;i>h-3;i--)
+        output[i][0]=1;
+}
+void eliminate(int **output,int *high,int row,int col){
+    int check=0;                      //if check==row,then eliminate the row
+    for(int i=4;i<row+4;i++){
+        if(output[i][0]!=0){
+            for(int j=1;i<col+1;j++){
+                if(output[i][j]==0){
+                    check=0;
+                    break;
+                }    
+                else check++; 
+            }
+        }
+        else continue;
+        if(check==row){                      //eliminate
+            check=0;
+            for(int k=1;k<col+1;k++)
+                output[i][k]=0; 
+            for(int k=i;k>0;k--)                  //move upper rows down 
+                for(int l=1;l<row+1;l++)
+                    output[k][l]=output[k-1][l];
+            for(int k=1;k<col+1;k++)             //make sure row(0) would be all 0
+                output[0][k]=0;        
+        }
+    }
+    int check1=0;                         
+    for(int i=1;i<col+1;i++){           //find the highest row in every col
+        for(int j=0;j<row+4;j++){   
+            if(output[j][i]==1){
+                high[i]=j;
+                check1=0;
+                break;
+            }
+            else check1++;
+        }
+        if(check1==row+4){          //if check1==row+4,then means that col is empty
+            high[i]=row+4;
+            check1=0;
+        }    
     }
 }
