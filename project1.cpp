@@ -57,6 +57,7 @@ int main(){
         high[i]=row+4;
     while(1){
         int h;
+        int check_exceed=0;
         inF>>tetris.type;
         if(tetris.type=="End"){
             break;
@@ -82,7 +83,22 @@ int main(){
         else if(tetris.type=="I1")  I1(output,high,ind);
         else if(tetris.type=="I2")  I2(output,high,ind);
         else                        O(output,high,ind);
+        eliminate(output,high,row,col);       
+        for(int i=1;i<col+1;i++){             //exceed or not
+            if(high[i]<4){
+                check_exceed=1;
+                break;
+            }
+        }
+        if(check_exceed==1){
+            break;
+        }
     }
+    for(int i=4;i<row+4;i++){          //show the output
+        for(int j=1;j<col+1;j++)
+            outF<<output[i][j];   
+        outF<<endl;     
+    }                     
     return 0;
 }
 void T1(int **output,int *high,int ind){
@@ -468,17 +484,17 @@ void O(int **output,int *high,int ind){
 void eliminate(int **output,int *high,int row,int col){
     int check=0;                      //if check==row,then eliminate the row
     for(int i=4;i<row+4;i++){
-        if(output[i][0]!=0){
-            for(int j=1;i<col+1;j++){
+        if(output[i][0]==1){
+            for(int j=1;j<col+1;j++){
                 if(output[i][j]==0){
                     check=0;
                     break;
                 }    
-                else check++; 
+                else check++;
             }
         }
         else continue;
-        if(check==row){                      //eliminate
+        if(check==col){                      //eliminate
             check=0; 
             for(int k=i;k>0;k--)                  //move upper rows down 
                 for(int l=1;l<col+1;l++)
