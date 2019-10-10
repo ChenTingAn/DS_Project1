@@ -34,15 +34,15 @@ int main(){
     int row,col,ind;
     int **output; 
     //read
-    ifstream inF("tetris.data", ios::in);
+    ifstream inF("Tetris.data", ios::in);
     if (!inF) {
-        cout << "can't open tetris.data" << endl;
+        cout << "can't open Tetris.data" << endl;
         return 1;
     }
     //write
-    ofstream outF("tetris.final", ios::out); 
+    ofstream outF("Tetris.output", ios::out); 
     if (!outF) {
-        cout << "can't open tetris.final" << endl;
+        cout << "can't open Tetris.output" << endl;
         return 1;
     }
     inF>>row>>col;
@@ -482,8 +482,36 @@ void O(int **output,int *high,int ind){
         output[i][0]=1;
 }
 void eliminate(int **output,int *high,int row,int col){
-    int check=0;                      //if check==row,then eliminate the row
-    for(int i=4;i<row+4;i++){
+    int check=0;                       //if check==row,then eliminate the row
+    int checkrow=4;
+    while(1){
+        if(checkrow==row+4) break;
+        else{
+            if(output[checkrow][0]==1){
+            for(int i=1;i<col+1;i++){
+                if(output[checkrow][i]==0){
+                    check=0;
+                    break;
+                }
+                else check++;
+            }
+            }
+            else{
+                checkrow++;
+                continue;
+            }
+            if(check==col){                      //eliminate
+                check=0; 
+                for(int k=checkrow;k>0;k--)                  //move upper rows down 
+                    for(int l=1;l<col+1;l++)
+                        output[k][l]=output[k-1][l];
+                for(int k=1;k<col+1;k++)             //make sure row(0) would be all 0
+                    output[0][k]=0;        
+            }
+            else checkrow++;  
+        }  
+    }                      
+    /*for(int i=4;i<row+4;i++){
         if(output[i][0]==1){
             for(int j=1;j<col+1;j++){
                 if(output[i][j]==0){
@@ -502,7 +530,7 @@ void eliminate(int **output,int *high,int row,int col){
             for(int k=1;k<col+1;k++)             //make sure row(0) would be all 0
                 output[0][k]=0;        
         }
-    }
+    }*/
     for(int i=0;i<row+4;i++)            //intitialize the record for changing of every row
         output[i][0]=0;
     int check1=0;                         
