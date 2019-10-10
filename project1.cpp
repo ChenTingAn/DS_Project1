@@ -500,37 +500,17 @@ void eliminate(int **output,int *high,int row,int col){
                 checkrow++;
                 continue;
             }
-            if(check==col){                      //eliminate
+            if(check==col){                                  //eliminate
                 check=0; 
                 for(int k=checkrow;k>0;k--)                  //move upper rows down 
                     for(int l=1;l<col+1;l++)
                         output[k][l]=output[k-1][l];
-                for(int k=1;k<col+1;k++)             //make sure row(0) would be all 0
+                for(int k=1;k<col+1;k++)                     //make sure row(0) would be all 0
                     output[0][k]=0;        
             }
             else checkrow++;  
         }  
     }                      
-    /*for(int i=4;i<row+4;i++){
-        if(output[i][0]==1){
-            for(int j=1;j<col+1;j++){
-                if(output[i][j]==0){
-                    check=0;
-                    break;
-                }    
-                else check++;
-            }
-        }
-        else continue;
-        if(check==col){                      //eliminate
-            check=0; 
-            for(int k=i;k>0;k--)                  //move upper rows down 
-                for(int l=1;l<col+1;l++)
-                    output[k][l]=output[k-1][l];
-            for(int k=1;k<col+1;k++)             //make sure row(0) would be all 0
-                output[0][k]=0;        
-        }
-    }*/
     for(int i=0;i<row+4;i++)            //intitialize the record for changing of every row
         output[i][0]=0;
     int check1=0;                         
