@@ -317,7 +317,7 @@ void J3(int **output,int *high,int ind){
 void J4(int **output,int *high,int ind){
     int h;
     //right is the highest or as high as middle or left
-    if(high[ind]<=high[ind+1]&&high[ind]<=high[ind+2]){
+    if(high[ind+2]<=high[ind+1]&&high[ind+2]<=high[ind]){
         h=high[ind+2];
         output[h-1][ind+2]=1;
         for(int i=ind;i<ind+3;i++){
@@ -329,7 +329,7 @@ void J4(int **output,int *high,int ind){
     }
     //middle or left is the highest
     else{
-        h=min(high[ind+1],high[ind+2]);
+        h=min(high[ind],high[ind+1]);
         output[h][ind+2]=1;
         for(int i=ind;i<ind+3;i++){
             output[h-1][i]=1;
