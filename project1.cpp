@@ -98,7 +98,9 @@ int main(){
         for(int j=1;j<col+1;j++)
             outF<<output[i][j];   
         outF<<endl;     
-    }                     
+    }
+    inF.close();
+    outF.close();                     
     return 0;
 }
 void T1(int **output,int *high,int ind){
