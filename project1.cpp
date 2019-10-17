@@ -40,9 +40,9 @@ int main(){
         return 1;
     }
     //write
-    ofstream outF("Tetris.output", ios::out); 
+    ofstream outF("Tetris.final", ios::out); 
     if (!outF) {
-        cout << "can't open Tetris.output" << endl;
+        cout << "can't open Tetris.final" << endl;
         return 1;
     }
     inF>>row>>col;
