@@ -490,13 +490,13 @@ void eliminate(int **output,int *high,int row,int col){
         if(checkrow==row+4) break;
         else{
             if(output[checkrow][0]==1){
-            for(int i=1;i<col+1;i++){
-                if(output[checkrow][i]==0){
-                    check=0;
-                    break;
+                for(int i=1;i<col+1;i++){
+                    if(output[checkrow][i]==0){
+                        check=0;
+                        break;
+                    }
+                    else check++;
                 }
-                else check++;
-            }
             }
             else{
                 checkrow++;
@@ -507,7 +507,7 @@ void eliminate(int **output,int *high,int row,int col){
                 for(int k=checkrow;k>0;k--)                  //move upper rows down 
                     for(int l=1;l<col+1;l++)
                         output[k][l]=output[k-1][l];
-                for(int k=1;k<col+1;k++)                     //make sure row(0) would be all 0
+                for(int k=1;k<col+1;k++)                     //make row(0) all be 0
                     output[0][k]=0;        
             }
             else checkrow++;  
